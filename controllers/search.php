@@ -102,7 +102,7 @@ class SearchController extends AuthenticatedController {
             // Add status selection filter widget.
             $statselect = new SelectWidget(dgettext('whowaswhere', 'Status einschränken'),
                 URLHelper::getLink('plugins.php/whowaswhereplugin/search/results',
-                    array('user_id' => $user_id, 'semester' => $start_time)),
+                    array('user_id' => $user_id, 'start_time' => $start_time)),
                 'status', 'post');
             $statselect->addElement(new SelectElement('',
                 dgettext('whowaswhere', 'Nicht einschränken'),
