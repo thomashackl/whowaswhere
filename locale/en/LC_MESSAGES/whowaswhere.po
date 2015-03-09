@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-03-09 15:41+0100\n"
+"POT-Creation-Date: 2015-03-09 15:53+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,32 +17,32 @@ msgstr ""
 "Content-Type: text/plain; charset=ISO-8859-1\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: controllers/search.php:87
+#: controllers/search.php:88
 #, php-format
 msgid "Es wurden keine Veranstaltungen für %s gefunden."
 msgstr ""
 
-#: controllers/search.php:91
+#: controllers/search.php:92
 msgid "Semester einschränken"
 msgstr ""
 
-#: controllers/search.php:95 views/search/index.php:9
+#: controllers/search.php:96 views/search/index.php:9
 msgid "Alle Semester"
 msgstr ""
 
-#: controllers/search.php:103
+#: controllers/search.php:104
 msgid "Status einschränken"
 msgstr ""
 
-#: controllers/search.php:108
+#: controllers/search.php:109
 msgid "Nicht einschränken"
 msgstr ""
 
-#: controllers/search.php:111 views/search/results.php:52
+#: controllers/search.php:112 views/search/results.php:52
 msgid "Teilnehmer/in"
 msgstr ""
 
-#: controllers/search.php:114
+#: controllers/search.php:115
 msgid "Lehrende/r"
 msgstr ""
 
@@ -115,10 +115,10 @@ msgstr ""
 msgid "unbekannt"
 msgstr ""
 
-#: WhoWasWherePlugin.class.php:26
+#: WhoWasWherePlugin.class.php:29
 msgid "Suche"
 msgstr ""
 
-#: WhoWasWherePlugin.class.php:34
+#: WhoWasWherePlugin.class.php:38
 msgid "Wer hat wo teilgenommen?"
 msgstr ""
