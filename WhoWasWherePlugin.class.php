@@ -19,12 +19,16 @@ require 'bootstrap.php';
 class WhoWasWherePlugin extends StudIPPlugin implements SystemPlugin {
 
     public function __construct() {
-        parent::__construct();
-        // Localization
-        bindtextdomain('whowaswhere', realpath(dirname(__FILE__).'/locale'));
-        $navigation = new Navigation($this->getDisplayName(), PluginEngine::getURL($this, array(), 'search'));
-        $navigation->addSubNavigation('search', new Navigation(dgettext('whowaswhere', 'Suche'), PluginEngine::getURL($this, array(), 'search')));
-        Navigation::addItem('/search/whowaswhere', $navigation);
+        // Plugin only available for roots or role.
+        if (RolePersistence::isAssignedRole($GLOBALS['user']->id, 'Wer hat wo teilgenommen') ||
+                $GLOBALS['perm']->have_perm('root')) {
+            parent::__construct();
+            // Localization
+            bindtextdomain('whowaswhere', realpath(dirname(__FILE__).'/locale'));
+            $navigation = new Navigation($this->getDisplayName(), PluginEngine::getURL($this, array(), 'search'));
+            $navigation->addSubNavigation('search', new Navigation(dgettext('whowaswhere', 'Suche'), PluginEngine::getURL($this, array(), 'search')));
+            Navigation::addItem('/search/whowaswhere', $navigation);
+        }
     }
 
     /**
