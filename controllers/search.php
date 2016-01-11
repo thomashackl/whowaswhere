@@ -37,11 +37,15 @@ class SearchController extends AuthenticatedController {
     public function index_action() {
         // Navigation handling.
         Navigation::activateItem('/search/whowaswhere/search');
-        if (class_exists('FullUserSearch')) {
-            $search = new FullUserSearch('user_id');
-        } else {
-            $search = new StandardSearch('user_id');
-        }
+        $search = new PermissionSearch(
+            'user',
+            '',
+            'user_id',
+            array(
+                'permission' => array('user', 'autor', 'tutor', 'dozent'),
+                'exclude_user' => array()
+            )
+        );
         $this->search = QuickSearch::get('user_id', $search)
             ->render();
         $this->semesters = Semester::getAll();
