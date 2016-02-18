@@ -1,6 +1,6 @@
 pluginname=WhoWasWhere
 pluginclassname=WhoWasWherePlugin
 origin=intelec
-version=1.1
+version=1.2
 studipMinVersion=3.1
 studipMaxVersion=3.9.99

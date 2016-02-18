@@ -1,4 +1,10 @@
 <?php
+
+/**
+ * Creates a role called "Wer hat wo teilgenommen" which can be assigned to
+ * users and allows accessing the plugin functions.
+ */
+
 class InitRole extends Migration {
 
     public function up() {

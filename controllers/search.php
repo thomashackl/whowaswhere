@@ -19,7 +19,8 @@ class SearchController extends AuthenticatedController {
     /**
      * Actions and settings taking place before every page call.
      */
-    public function before_filter(&$action, &$args) {
+    public function before_filter(&$action, &$args)
+    {
         $this->plugin = $this->dispatcher->plugin;
         $this->flash = Trails_Flash::instance();
 
@@ -34,7 +35,8 @@ class SearchController extends AuthenticatedController {
         $this->sidebar->setImage('sidebar/search-sidebar.png');
     }
 
-    public function index_action() {
+    public function index_action()
+    {
         // Navigation handling.
         Navigation::activateItem('/search/whowaswhere/search');
         $search = new PermissionSearch(
@@ -54,43 +56,31 @@ class SearchController extends AuthenticatedController {
     /**
      * Get results for a given user and semester.
      */
-    public function results_action() {
+    public function results_action()
+    {
         // Navigation handling.
         Navigation::activateItem('/search/whowaswhere');
+
         /*
          * Check if a user_id was given or just pressed enter after entering
          * something in search field.
          */
         if ($user_id = Request::option('user_id')) {
-            $query = "SELECT s.`Seminar_id`, s.`VeranstaltungsNummer`, s.`Name`, st.`name` AS type, su.`status`, sd.`name` AS semester
-                FROM `seminare` s
-                    INNER JOIN `seminar_user` su ON (s.`Seminar_id`=su.`Seminar_id`)
-                    INNER JOIN `sem_types` st ON (s.`status`=st.`id`)
-                    INNER JOIN `semester_data` sd ON (s.`start_time` BETWEEN sd.`beginn` AND sd.`ende`)
-                WHERE su.`user_id`=?
-                    AND s.`status` NOT IN (?)";
-            $parameters = array($user_id, Config::get()->STUDYGROUPS_ENABLE ? studygroup_sem_types() : array());
-            if ($status = Request::quoted('status')) {
-                $query .= " AND su.`status` IN (?) ";
-                $parameters[] = explode(",", $status);
-            }
-            if ($start_time = Request::option('start_time')) {
-                $query .= " AND s.`start_time`=?";
-                $parameters[] = $start_time;
-            }
-            $query .= "ORDER BY s.`start_time` DESC, s.`VeranstaltungsNummer`, s.`Name`";
-            $courses = DBManager::get()->fetchAll($query, $parameters);
-            if ($courses) {
-                $this->courses = array();
-                foreach ($courses as $c) {
-                    $this->courses[$c['semester']][] = $c;
-                }
-                $this->user = User::find($user_id);
-            } else {
-                $this->message = MessageBox::info(sprintf(dgettext('whowaswhere',
-                    'Es wurden keine Veranstaltungen für %s gefunden.'),
-                    User::find($user_id)->getFullname()));
-            }
+
+            $this->categories = array_map(function ($c) {
+                return SeminarCategories::get($c)->name;
+            }, Config::get()->WHOWASWHERE_SHOW_COURSE_CATEGORIES ?: array(1));
+
+            $this->user = User::find($user_id);
+
+            $start_time = Request::int('start_time', 0);
+            $status = Request::get('status', 'user,autor,tutor,dozent');
+
+            // Get courses for given user.
+            $this->courses = $this->getCourses($user_id,
+                Request::quoted('status', 'user,autor,tutor,dozent'),
+                Request::int('start_time', 0));
+
             // Add semester selection filter widget.
             $semselect = new SelectWidget(dgettext('whowaswhere', 'Semester einschränken'),
                 URLHelper::getLink('plugins.php/whowaswhereplugin/search/results',
@@ -108,9 +98,9 @@ class SearchController extends AuthenticatedController {
                 URLHelper::getLink('plugins.php/whowaswhereplugin/search/results',
                     array('user_id' => $user_id, 'start_time' => $start_time)),
                 'status', 'post');
-            $statselect->addElement(new SelectElement('',
+            $statselect->addElement(new SelectElement('user,autor,tutor,dozent',
                 dgettext('whowaswhere', 'Nicht einschränken'),
-                $status == ''), 'status-all');
+                $status == 'user,autor,tutor,dozent'), 'status-all');
             $statselect->addElement(new SelectElement('user,autor',
                 dgettext('whowaswhere', 'Teilnehmer/in'),
                 $status == 'user,autor'), 'status-user-autor');
@@ -118,15 +108,37 @@ class SearchController extends AuthenticatedController {
                 dgettext('whowaswhere', 'Lehrende/r'),
                 $status == 'tutor,dozent'), 'status-tutor-dozent');
             $this->sidebar->addWidget($statselect);
+
+            PageLayout::setTitle($this->plugin->getDisplayName() . ' - ' .
+                sprintf(dgettext('whowaswhere', 'Suchergebnis für %s'), $this->user->getFullname()));
+
         // No real user_id given -> redirect to search form.
         } else {
+
             $this->redirect(URLHelper::getLink('plugins.php/whowaswhereplugin/search',
                 array('user_id_parameter' => Request::quoted('user_id_parameter'))));
+
         }
+
+    }
+
+    public function export_csv_action($user_id, $status, $start_time)
+    {
+        $courses = $this->getCourses($user_id, $status, $start_time);
+        $data = array(
+            array(_('Semester'), _('Nummer'), _('Titel'), _('Dozent/in'), _('Zeiten'))
+        );
+
+        $user = User::find($user_id)->getFullname();
+
+        header("Content-type: text/csv;charset=windows-1252");
+        header("Content-disposition: attachment; filename=" . $filename . ".vcf");
+        header("Pragma: private");
     }
 
     // customized #url_for for plugins
-    function url_for($to) {
+    public function url_for($to)
+    {
         $args = func_get_args();
 
         // find params
@@ -140,6 +152,49 @@ class SearchController extends AuthenticatedController {
         $args[0] = $to;
 
         return PluginEngine::getURL($this->plugin, $params, join("/", $args));
+    }
+
+    private function getCourses($user_id, $status = 'user,autor,tutor,dozent', $start_time = 0)
+    {
+
+        // Get all allowed course types.
+        $categories = Config::get()->WHOWASWHERE_SHOW_COURSE_CATEGORIES ?: array(1);
+        $types = array_filter(SemType::getTypes(), function ($t) use ($categories) { return in_array($t['class'], $categories); });
+
+        // Get courses for given user...
+        $query = "SELECT s.`Seminar_id`, s.`VeranstaltungsNummer`, s.`Name`, st.`name` AS type, su.`status`, sd.`name` AS semester
+                FROM `seminare` s
+                    INNER JOIN `seminar_user` su ON (s.`Seminar_id`=su.`Seminar_id`)
+                    INNER JOIN `sem_types` st ON (s.`status`=st.`id`)
+                    INNER JOIN `semester_data` sd ON (s.`start_time` BETWEEN sd.`beginn` AND sd.`ende`)
+                WHERE su.`user_id`=?
+                    AND s.`status` NOT IN (?)
+                    AND s.`status` IN (?)
+                    AND su.`status` IN (?)";
+        $parameters = array(
+            $user_id,
+            Config::get()->STUDYGROUPS_ENABLE ? studygroup_sem_types() : array(),
+            array_map(function ($t) { return $t['id']; }, $types),
+            explode(",", $status)
+        );
+
+        if ($start_time) {
+            $query .= " AND s.`start_time`=? ";
+            $parameters[] = $start_time;
+        }
+
+        $query .= " ORDER BY s.`start_time` DESC, s.`VeranstaltungsNummer`, s.`Name`";
+        $courses = DBManager::get()->fetchAll($query, $parameters);
+
+        // ... and sort them by semester.
+        $sorted = array();
+        if ($courses) {
+            foreach ($courses as $c) {
+                $sorted[$c['semester']][] = $c;
+            }
+        }
+
+        return $sorted;
     }
 
 }
