@@ -19,15 +19,21 @@ require 'bootstrap.php';
 class WhoWasWherePlugin extends StudIPPlugin implements SystemPlugin {
 
     public function __construct() {
+        parent::__construct();
+        // Localization
+        bindtextdomain('whowaswhere', realpath(__DIR__.'/locale'));
         // Plugin only available for roots or role.
         if (RolePersistence::isAssignedRole($GLOBALS['user']->id, 'Wer hat wo teilgenommen') ||
                 $GLOBALS['perm']->have_perm('root')) {
-            parent::__construct();
-            // Localization
-            bindtextdomain('whowaswhere', realpath(dirname(__FILE__).'/locale'));
-            $navigation = new Navigation($this->getDisplayName(), PluginEngine::getURL($this, array(), 'search'));
-            $navigation->addSubNavigation('search', new Navigation(dgettext('whowaswhere', 'Suche'), PluginEngine::getURL($this, array(), 'search')));
+            $navigation = new Navigation($this->getDisplayName(),
+                PluginEngine::getURL($this, array(), 'search'));
+            $navigation->addSubNavigation('search',
+                new Navigation(dgettext('whowaswhere', 'Suche'),
+                    PluginEngine::getURL($this, array(), 'search')));
             Navigation::addItem('/search/whowaswhere', $navigation);
+        }
+        if (strpos($_SERVER['REQUEST_URI'], 'my_courses') !== false && !$GLOBALS['perm']->have_perm('admin')) {
+            NotificationCenter::addObserver($this, 'addSidebarActions', 'SidebarWillRender');
         }
     }
 
@@ -61,6 +67,16 @@ class WhoWasWherePlugin extends StudIPPlugin implements SystemPlugin {
             RolePersistence::deleteAssignedPluginRoles($plugin_id, array_map(function($r) { return $r->roleid; }, $roles));
         }
         parent::onDisable($plugin_id);
+    }
+
+    public function addSidebarActions($event, $sidebar) {
+        try {
+            $aw = $sidebar->getWidget('actions');
+            $aw->addLink(_('Excel-Export'),
+                URLHelper::getURL('plugins.php/whowaswhereplugin/export'),
+                Icon::create('export', 'clickable'),
+                array('title' => dgettext('whowaswhere', 'Meine Veranstaltungen exportieren')))->asDialog('size=auto');
+        } catch (Exception $e) {}
     }
 
 }
