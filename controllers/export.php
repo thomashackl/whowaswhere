@@ -55,13 +55,25 @@ class ExportController extends AuthenticatedController {
             dgettext('whowaswhere', 'Daten vom %s'),
             date('d.m.Y H:i')));
 
+        $csv[] = array(
+            _('Semester'),
+            _('Nummer'),
+            _('Name'),
+            _('Typ'),
+            _('Dozierende'),
+            _('ECTS')
+        );
         foreach ($courses as $semester => $data) {
             foreach ($data as $course) {
+                $c = Course::find($course['Seminar_id']);
                 $csv[] = array(
                     $semester,
-                    $course['VeranstaltungsNummer'],
-                    $course['Name'],
-                    $course['type']
+                    $c->veranstaltungsnummer,
+                    $c->name,
+                    $course['type'],
+                    implode(', ', array_map(function ($m) { return $m->getUserFullname(); },
+                        CourseMember::findByCourseAndStatus($c->id, 'dozent'))),
+                    $c->ects
                 );
             }
         }
