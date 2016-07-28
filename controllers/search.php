@@ -21,7 +21,8 @@ class SearchController extends AuthenticatedController {
      */
     public function before_filter(&$action, &$args)
     {
-        if (!RolePersistence::isAssignedRole($GLOBALS['user']->id, 'Wer hat wo teilgenommen')) {
+        if (!$GLOBALS['perm']->have_perm('root') &&
+                !RolePersistence::isAssignedRole($GLOBALS['user']->id, 'Wer hat wo teilgenommen')) {
             throw new AccessDeniedException(dgettext('whowaswhere',
                 'Sie haben nicht die nötigen Rechte, um auf diese Funktion zuzugreifen!'));
         }
