@@ -87,6 +87,13 @@ class SearchController extends AuthenticatedController {
                 Request::quoted('status', 'user,autor,tutor,dozent'),
                 Request::int('start_time', 0));
 
+            if (Config::get()->WHOWASWHERE_MATRICULATION_DATAFIELD_ID) {
+                $matriculation = DBManager::get()->fetchOne(
+                    "SELECT `content` FROM `datafields_entries` WHERE `datafield_id` = ? AND `range_id` = ?",
+                    array(Config::get()->WHOWASWHERE_MATRICULATION_DATAFIELD_ID, $user_id));
+                $this->matriculation = $matriculation['content'];
+            }
+
             // Add semester selection filter widget.
             $semselect = new SelectWidget(dgettext('whowaswhere', 'Semester einschränken'),
                 URLHelper::getLink('plugins.php/whowaswhereplugin/search/results',

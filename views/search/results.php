@@ -2,6 +2,11 @@
     <header>
         <h1><?= htmlReady($user->getFullname()) ?> (<?= htmlReady($user->username) ?>)</h1>
     </header>
+    <?php if ($matriculation) : ?>
+        <section>
+            <b><?= _('Matrikelnummer') ?>:</b> <?= htmlReady($matriculation) ?>
+        </section>
+    <?php endif ?>
     <?php if (count($user->studycourses) > 0) : ?>
     <section>
         <h2><?= dngettext('whowaswhere', 'Studiengang', 'Studiengänge', count($user->studycourses)) ?></h2>
