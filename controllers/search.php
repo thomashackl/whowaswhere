@@ -22,7 +22,8 @@ class SearchController extends AuthenticatedController {
     public function before_filter(&$action, &$args)
     {
         if (!$GLOBALS['perm']->have_perm('root') &&
-                !RolePersistence::isAssignedRole($GLOBALS['user']->id, 'Wer hat wo teilgenommen')) {
+                !RolePersistence::isAssignedRole($GLOBALS['user']->id, 'Wer hat wo teilgenommen') &&
+                !RolePersistence::isAssignedRole($GLOBALS['user']->id, 'Wer hat wo teilgenommen - eingeschränkt')) {
             throw new AccessDeniedException(dgettext('whowaswhere',
                 'Sie haben nicht die nötigen Rechte, um auf diese Funktion zuzugreifen!'));
         }
@@ -170,30 +171,41 @@ class SearchController extends AuthenticatedController {
     private function getCourses($user_id, $status = 'user,autor,tutor,dozent', $start_time = 0)
     {
 
+        // Check if current user can only see results coming from own institutes.
+        $onlyOwn = false;
+        if (RolePersistence::isAssignedRole($GLOBALS['user']->id, 'Wer hat wo teilgenommen - eingeschränkt')) {
+            $onlyOwn = true;
+        }
+
         // Get all allowed course types.
         $categories = Config::get()->WHOWASWHERE_SHOW_COURSE_CATEGORIES ?: array(1);
         $types = array_filter(SemType::getTypes(), function ($t) use ($categories) { return in_array($t['class'], $categories); });
 
         // Get courses for given user...
         $query = "SELECT s.`Seminar_id`, s.`VeranstaltungsNummer`, s.`Name`, st.`name` AS type, su.`status`, sd.`name` AS semester
-                FROM `seminare` s
-                    INNER JOIN `seminar_user` su ON (s.`Seminar_id`=su.`Seminar_id`)
+                FROM `seminare` s " .
+                ($onlyOwn ? "    INNER JOIN `seminar_inst` si ON (s.`Seminar_id`=si.`seminar_id`) " : "") .
+                "    INNER JOIN `seminar_user` su ON (s.`Seminar_id`=su.`Seminar_id`)
                     INNER JOIN `sem_types` st ON (s.`status`=st.`id`)
                     INNER JOIN `semester_data` sd ON (s.`start_time` BETWEEN sd.`beginn` AND sd.`ende`)
-                WHERE su.`user_id`=?
-                    AND s.`status` NOT IN (?)
-                    AND s.`status` IN (?)
-                    AND su.`status` IN (?)";
+                WHERE su.`user_id`=:user
+                    AND s.`status` NOT IN (:exclude)
+                    AND s.`status` IN (:include) ".
+                "    AND su.`status` IN (:userstatus)";
         $parameters = array(
-            $user_id,
-            Config::get()->STUDYGROUPS_ENABLE ? studygroup_sem_types() : array(),
-            array_map(function ($t) { return $t['id']; }, $types),
-            explode(",", $status)
+            'user' => $user_id,
+            'exclude' => Config::get()->STUDYGROUPS_ENABLE ? studygroup_sem_types() : array(),
+            'include' => array_map(function ($t) { return $t['id']; }, $types),
+            'userstatus' => explode(",", $status)
         );
+        if ($onlyOwn) {
+            $query .= " AND si.`institut_id` IN (:inst)";
+            $parameters['inst'] = array_map(function ($i) { return $i['Institut_id']; }, Institute::getMyInstitutes());
+        }
 
         if ($start_time) {
-            $query .= " AND s.`start_time`=? ";
-            $parameters[] = $start_time;
+            $query .= " AND s.`start_time`=:start ";
+            $parameters['start'] = $start_time;
         }
 
         $query .= " ORDER BY s.`start_time` DESC, s.`VeranstaltungsNummer`, s.`Name`";

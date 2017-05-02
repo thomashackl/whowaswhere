@@ -24,6 +24,7 @@ class WhoWasWherePlugin extends StudIPPlugin implements SystemPlugin {
         bindtextdomain('whowaswhere', realpath(__DIR__.'/locale'));
         // Plugin only available for roots or role.
         if (RolePersistence::isAssignedRole($GLOBALS['user']->id, 'Wer hat wo teilgenommen') ||
+                RolePersistence::isAssignedRole($GLOBALS['user']->id, 'Wer hat wo teilgenommen - eingeschränkt') ||
                 $GLOBALS['perm']->have_perm('root')) {
             $navigation = new Navigation($this->getDisplayName(),
                 PluginEngine::getURL($this, array(), 'search'));
@@ -52,21 +53,6 @@ class WhoWasWherePlugin extends StudIPPlugin implements SystemPlugin {
         );
         $dispatcher->plugin = $this;
         $dispatcher->dispatch($unconsumed_path);
-    }
-
-    public static function onEnable($plugin_id) {
-        parent::onEnable($plugin_id);
-        $role = DBManager::get()->fetchFirst("SELECT `roleid` FROM `roles` WHERE `rolename`='Wer hat wo teilgenommen'");
-        if ($role) {
-            RolePersistence::assignPluginRoles($plugin_id, array($role, 1));
-        }
-    }
-
-    public static function onDisable($plugin_id) {
-        if ($roles = RolePersistence::getAssignedPluginRoles($plugin_id)) {
-            RolePersistence::deleteAssignedPluginRoles($plugin_id, array_map(function($r) { return $r->roleid; }, $roles));
-        }
-        parent::onDisable($plugin_id);
     }
 
     public function addSidebarActions($event, $sidebar) {
