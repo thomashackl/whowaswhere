@@ -11,9 +11,7 @@ TRANSLATIONFILES_RELATIVE_PATHS="."
 for language in en
 do
     test -f "$LOCALE_RELATIVE_PATH/$language/LC_MESSAGES/whowaswhere.po" && mv "$LOCALE_RELATIVE_PATH/$language/LC_MESSAGES/whowaswhere.po" "$LOCALE_RELATIVE_PATH/$language/LC_MESSAGES/whowaswhere.po.old"
-    > "$LOCALE_RELATIVE_PATH/$language/LC_MESSAGES/whowaswhere.UTF-8.po"
-    find $TRANSLATIONFILES_RELATIVE_PATHS \( -iname "*.php" \) | xargs xgettext --from-code=ISO-8859-1 -j -n --language=PHP -o "$LOCALE_RELATIVE_PATH/$language/LC_MESSAGES/whowaswhere.UTF-8.po"
-    msgconv --to-code=iso-8859-1 "$LOCALE_RELATIVE_PATH/$language/LC_MESSAGES/whowaswhere.UTF-8.po" -o "$LOCALE_RELATIVE_PATH/$language/LC_MESSAGES/whowaswhere.po"
+    > "$LOCALE_RELATIVE_PATH/$language/LC_MESSAGES/whowaswhere.po"
+    find $TRANSLATIONFILES_RELATIVE_PATHS \( -iname "*.php" \) | xargs xgettext --from-code=UTF-8 -j -n --language=PHP -o "$LOCALE_RELATIVE_PATH/$language/LC_MESSAGES/whowaswhere.po"
     test -f "$LOCALE_RELATIVE_PATH/$language/LC_MESSAGES/whowaswhere.po.old" && msgmerge "$LOCALE_RELATIVE_PATH/$language/LC_MESSAGES/whowaswhere.po.old" "$LOCALE_RELATIVE_PATH/$language/LC_MESSAGES/whowaswhere.po" --output-file="$LOCALE_RELATIVE_PATH/$language/LC_MESSAGES/whowaswhere.po"
-    test -f "$LOCALE_RELATIVE_PATH/$language/LC_MESSAGES/whowaswhere.UTF-8.po" && rm "$LOCALE_RELATIVE_PATH/$language/LC_MESSAGES/whowaswhere.UTF-8.po"
 done

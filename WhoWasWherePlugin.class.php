@@ -14,8 +14,6 @@
  * @category    Stud.IP
  */
 
-require 'bootstrap.php';
-
 class WhoWasWherePlugin extends StudIPPlugin implements SystemPlugin {
 
     public function __construct() {
@@ -24,7 +22,7 @@ class WhoWasWherePlugin extends StudIPPlugin implements SystemPlugin {
         bindtextdomain('whowaswhere', realpath(__DIR__.'/locale'));
         // Plugin only available for roots or role.
         if (RolePersistence::isAssignedRole($GLOBALS['user']->id, 'Wer hat wo teilgenommen') ||
-                RolePersistence::isAssignedRole($GLOBALS['user']->id, 'Wer hat wo teilgenommen - eingeschränkt') ||
+                RolePersistence::isAssignedRole($GLOBALS['user']->id, 'Wer hat wo teilgenommen - eingeschrÃ¤nkt') ||
                 $GLOBALS['perm']->have_perm('root')) {
             $navigation = new Navigation($this->getDisplayName(),
                 PluginEngine::getURL($this, array(), 'search'));

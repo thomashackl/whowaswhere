@@ -14,7 +14,7 @@ class RestrictCategories extends Migration {
                 'Welche Veranstaltungskategorien sollen in der Liste erscheinen? (Standard: Lehre)', '', ''),
             (MD5('WHOWASWHERE_MATRICULATION_DATAFIELD_ID'), '', 'WHOWASWHERE_MATRICULATION_DATAFIELD_ID', '', 1,
                 'string', 'global', 'whowaswhere', 1, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(),
-                'ID des freien Datenfelds für die Matrikelnummer (kann auch leer sein, dann wird nichts angezeigt)',
+                'ID des freien Datenfelds fÃ¼r die Matrikelnummer (kann auch leer sein, dann wird nichts angezeigt)',
                 '', '')
         ");
     }

@@ -9,10 +9,10 @@
     <?php endif ?>
     <?php if (count($user->studycourses) > 0) : ?>
     <section>
-        <h2><?= dngettext('whowaswhere', 'Studiengang', 'Studiengänge', count($user->studycourses)) ?></h2>
+        <h2><?= dngettext('whowaswhere', 'Studiengang', 'StudiengÃ¤nge', count($user->studycourses)) ?></h2>
         <?= $this->render_partial('search/_study_courses.php',
             array('studycourses' => $user->studycourses->filter(function ($s) {
-                return $s->studycourse_name != 'Beschäftigte';
+                return $s->studycourse_name != 'BeschÃ¤ftigte';
             }))) ?>
     </section>
     <?php endif ?>

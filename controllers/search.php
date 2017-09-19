@@ -23,9 +23,9 @@ class SearchController extends AuthenticatedController {
     {
         if (!$GLOBALS['perm']->have_perm('root') &&
                 !RolePersistence::isAssignedRole($GLOBALS['user']->id, 'Wer hat wo teilgenommen') &&
-                !RolePersistence::isAssignedRole($GLOBALS['user']->id, 'Wer hat wo teilgenommen - eingeschr‰nkt')) {
+                !RolePersistence::isAssignedRole($GLOBALS['user']->id, 'Wer hat wo teilgenommen - eingeschr√§nkt')) {
             throw new AccessDeniedException(dgettext('whowaswhere',
-                'Sie haben nicht die nˆtigen Rechte, um auf diese Funktion zuzugreifen!'));
+                'Sie haben nicht die n√∂tigen Rechte, um auf diese Funktion zuzugreifen!'));
         }
 
         $this->plugin = $this->dispatcher->plugin;
@@ -96,7 +96,7 @@ class SearchController extends AuthenticatedController {
             }
 
             // Add semester selection filter widget.
-            $semselect = new SelectWidget(dgettext('whowaswhere', 'Semester einschr‰nken'),
+            $semselect = new SelectWidget(dgettext('whowaswhere', 'Semester einschr√§nken'),
                 URLHelper::getLink('plugins.php/whowaswhereplugin/search/results',
                     array('user_id' => $user_id, 'status' => $status)),
                 'start_time', 'post');
@@ -108,12 +108,12 @@ class SearchController extends AuthenticatedController {
             }
             $this->sidebar->addWidget($semselect);
             // Add status selection filter widget.
-            $statselect = new SelectWidget(dgettext('whowaswhere', 'Status einschr‰nken'),
+            $statselect = new SelectWidget(dgettext('whowaswhere', 'Status einschr√§nken'),
                 URLHelper::getLink('plugins.php/whowaswhereplugin/search/results',
                     array('user_id' => $user_id, 'start_time' => $start_time)),
                 'status', 'post');
             $statselect->addElement(new SelectElement('user,autor,tutor,dozent',
-                dgettext('whowaswhere', 'Nicht einschr‰nken'),
+                dgettext('whowaswhere', 'Nicht einschr√§nken'),
                 $status == 'user,autor,tutor,dozent'), 'status-all');
             $statselect->addElement(new SelectElement('user,autor',
                 dgettext('whowaswhere', 'Teilnehmer/in'),
@@ -124,7 +124,7 @@ class SearchController extends AuthenticatedController {
             $this->sidebar->addWidget($statselect);
 
             PageLayout::setTitle($this->plugin->getDisplayName() . ' - ' .
-                sprintf(dgettext('whowaswhere', 'Suchergebnis f¸r %s'), $this->user->getFullname()));
+                sprintf(dgettext('whowaswhere', 'Suchergebnis f√ºr %s'), $this->user->getFullname()));
 
         // No real user_id given -> redirect to search form.
         } else {
@@ -173,7 +173,7 @@ class SearchController extends AuthenticatedController {
 
         // Check if current user can only see results coming from own institutes.
         $onlyOwn = false;
-        if (RolePersistence::isAssignedRole($GLOBALS['user']->id, 'Wer hat wo teilgenommen - eingeschr‰nkt')) {
+        if (RolePersistence::isAssignedRole($GLOBALS['user']->id, 'Wer hat wo teilgenommen - eingeschr√§nkt')) {
             $onlyOwn = true;
         }
 

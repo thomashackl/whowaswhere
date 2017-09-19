@@ -5,7 +5,7 @@
     </section>
     <section>
         <label>
-            <?= dgettext('whowaswhere', 'Semester einschränken:') ?>
+            <?= dgettext('whowaswhere', 'Semester einschrÃ¤nken:') ?>
             <br/>
             <select name="start_time">
                 <option value=""><?= dgettext('whowaswhere', 'Alle Semester') ?></option>

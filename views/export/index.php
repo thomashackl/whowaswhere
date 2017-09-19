@@ -4,7 +4,7 @@
             <?= dgettext('whowaswhere', 'Welche Veranstaltungen sollen im Export ausgegeben werden?') ?>
         </h1>
         <p>
-            <?= dgettext('whowaswhere', 'Es sind nur Veranstaltungen bis zum aktuellen Semester auswählbar.') ?>
+            <?= dgettext('whowaswhere', 'Es sind nur Veranstaltungen bis zum aktuellen Semester auswÃ¤hlbar.') ?>
         </p>
     </header>
     <?php foreach ($courses as $semester => $data) : ?>
@@ -53,6 +53,6 @@
     <?php endforeach ?>
     <footer data-dialog-button>
         <?= Studip\Button::createAccept(_('Exportieren'), 'export') ?>
-        <?= Studip\LinkButton::createCancel(_('Schließen'), URLHelper::getURL('dispatch.php/my_courses')) ?>
+        <?= Studip\LinkButton::createCancel(_('SchlieÃŸen'), URLHelper::getURL('dispatch.php/my_courses')) ?>
     </footer>
 </form>

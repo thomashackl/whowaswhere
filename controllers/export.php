@@ -49,7 +49,7 @@ class ExportController extends AuthenticatedController {
         $csv = array();
 
         $csv[] = array(sprintf(
-            dgettext('whowaswhere', 'Veranstaltungsübersicht für %s'),
+            dgettext('whowaswhere', 'VeranstaltungsÃ¼bersicht fÃ¼r %s'),
             $GLOBALS['user']->getFullname()));
         $csv[] = array(sprintf(
             dgettext('whowaswhere', 'Daten vom %s'),
