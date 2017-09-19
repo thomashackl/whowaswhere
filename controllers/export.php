@@ -25,12 +25,7 @@ class ExportController extends AuthenticatedController {
         $this->flash = Trails_Flash::instance();
 
         // Check for AJAX.
-        if (Request::isXhr()) {
-            $this->set_layout(null);
-            header('Content-Type: text/html; charset=windows-1252');
-        } else {
-            $this->set_layout($GLOBALS['template_factory']->open('layouts/base'));
-        }
+        $this->set_layout(Request::isXhr() ? null : $GLOBALS['template_factory']->open('layouts/base'));
     }
 
     public function index_action()

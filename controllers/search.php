@@ -32,12 +32,8 @@ class SearchController extends AuthenticatedController {
         $this->flash = Trails_Flash::instance();
 
         // Check for AJAX.
-        if (Request::isXhr()) {
-            $this->set_layout(null);
-            header('Content-Type: text/html; charset=windows-1252');
-        } else {
-            $this->set_layout($GLOBALS['template_factory']->open('layouts/base'));
-        }
+        $this->set_layout(Request::isXhr() ? null : $GLOBALS['template_factory']->open('layouts/base'));
+
         $this->sidebar = Sidebar::get();
         $this->sidebar->setImage('sidebar/search-sidebar.png');
     }
@@ -145,7 +141,7 @@ class SearchController extends AuthenticatedController {
 
         $user = User::find($user_id)->getFullname();
 
-        header("Content-type: text/csv;charset=windows-1252");
+        header("Content-type: text/csv;charset=utf-8");
         header("Content-disposition: attachment; filename=" . $filename . ".vcf");
         header("Pragma: private");
     }
