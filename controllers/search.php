@@ -185,12 +185,10 @@ class SearchController extends AuthenticatedController {
                     INNER JOIN `sem_types` st ON (s.`status`=st.`id`)
                     INNER JOIN `semester_data` sd ON (s.`start_time` BETWEEN sd.`beginn` AND sd.`ende`)
                 WHERE su.`user_id`=:user
-                    AND s.`status` NOT IN (:exclude)
-                    AND s.`status` IN (:include) ".
-                "    AND su.`status` IN (:userstatus)";
+                    AND s.`status` IN (:include)
+                    AND su.`status` IN (:userstatus)";
         $parameters = array(
             'user' => $user_id,
-            'exclude' => Config::get()->STUDYGROUPS_ENABLE ? studygroup_sem_types() : array(),
             'include' => array_map(function ($t) { return $t['id']; }, $types),
             'userstatus' => explode(",", $status)
         );
