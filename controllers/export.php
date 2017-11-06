@@ -112,14 +112,12 @@ class ExportController extends AuthenticatedController {
                     INNER JOIN `sem_types` st ON (s.`status`=st.`id`)
                     INNER JOIN `semester_data` sd ON (s.`start_time` BETWEEN sd.`beginn` AND sd.`ende`)
                 WHERE su.`user_id` = ?
-                    AND s.`status` NOT IN (?)
                     AND s.`status` IN (?)
                     AND su.`status` IN (?)
                     AND s.`start_time` <= UNIX_TIMESTAMP()";
 
         $parameters = array(
             $GLOBALS['user']->id,
-            Config::get()->STUDYGROUPS_ENABLE ? studygroup_sem_types() : array(),
             array_map(function ($t) { return $t['id']; }, $types),
             array('autor')
         );
