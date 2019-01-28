@@ -34,7 +34,6 @@ class ExportController extends AuthenticatedController {
         PageLayout::setTitle(dgettext('whowaswhere', 'Meine Veranstaltungen exportieren'));
 
         $this->courses = $this->getCourses();
-
     }
 
     public function do_action()
@@ -46,6 +45,20 @@ class ExportController extends AuthenticatedController {
         $csv[] = array(sprintf(
             dgettext('whowaswhere', 'Veranstaltungsübersicht für %s'),
             $GLOBALS['user']->getFullname()));
+        $csv[] = array(sprintf('Matrikelnummer: %u',
+            $GLOBALS['user']->datafields->findOneBy('Name', 'Matrikelnummer')->content));
+
+        $csv[] = array(sprintf('Studiengang: %s',
+            implode(', ', array_map(
+                function ($s) {
+                    $name = $s['studycourse_name'];
+                    if ($s['degree_name'] != '') {
+                        $name = $s['degree_name'] . ' ' . $name;
+                    }
+                    return $name;
+                }, $GLOBALS['user']->studycourses->toArray())
+            )
+        ));
         $csv[] = array(sprintf(
             dgettext('whowaswhere', 'Daten vom %s'),
             date('d.m.Y H:i')));
@@ -56,7 +69,8 @@ class ExportController extends AuthenticatedController {
             _('Name'),
             _('Typ'),
             _('Dozierende'),
-            _('ECTS')
+            _('ECTS'),
+            _('Anrechenbarkeit')
         );
         foreach ($courses as $semester => $data) {
             foreach ($data as $course) {
@@ -68,7 +82,9 @@ class ExportController extends AuthenticatedController {
                     $course['type'],
                     implode(', ', array_map(function ($m) { return $m->getUserFullname(); },
                         CourseMember::findByCourseAndStatus($c->id, 'dozent'))),
-                    $c->ects
+                    $c->ects,
+                    implode("\n", array_unique(array_map(function ($m) { return $m['name']; },
+                        $c->study_areas->orderBy('name')->toArray()))),
                 );
             }
         }
