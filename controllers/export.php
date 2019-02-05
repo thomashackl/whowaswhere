@@ -89,9 +89,14 @@ class ExportController extends AuthenticatedController {
             }
         }
 
+        $this->response->add_header('Content-Description', 'File Transfer');
         $this->response->add_header('Content-Type', 'text/csv');
         $this->response->add_header('Content-Disposition',
             'attachment; filename=veranstaltungen-'.$GLOBALS['user']->username.'.csv');
+        $this->response->add_header('Content-Transfer-Encoding', 'binary');
+        $this->response->add_header('Expires', 0);
+        $this->response->add_header('Cache-Control', 'must-revalidate, post-check=0, pre-check=0');
+        $this->response->add_header('Pragma', 'public');
         $this->render_text(array_to_csv($csv));
     }
 
@@ -135,7 +140,7 @@ class ExportController extends AuthenticatedController {
         $parameters = array(
             $GLOBALS['user']->id,
             array_map(function ($t) { return $t['id']; }, $types),
-            array('autor')
+            array('autor', 'user')
         );
 
         if ($course_ids) {
