@@ -45,8 +45,13 @@ class ExportController extends AuthenticatedController {
         $csv[] = array(sprintf(
             dgettext('whowaswhere', 'Veranstaltungsübersicht für %s'),
             $GLOBALS['user']->getFullname()));
-        $csv[] = array(sprintf('Matrikelnummer: %u',
-            $GLOBALS['user']->datafields->findOneBy('Name', 'Matrikelnummer')->content));
+        if ($birthdate = $GLOBALS['user']->datafields->findOneBy('Name', 'Geburtsdatum')) {
+            $csv[] = array(sprintf('Geboren am: %s',
+                date('d.m.Y', strtotime($birthdate->content))));
+        }
+        if ($matriculation = $GLOBALS['user']->datafields->findOneBy('Name', 'Geburtsdatum')) {
+            $csv[] = array(sprintf('Matrikelnummer: %u', $matriculation->content));
+        }
 
         $csv[] = array(sprintf('Studiengang: %s',
             implode(', ', array_map(
