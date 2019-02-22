@@ -60,7 +60,7 @@
                                 default:
                                     $status = dgettext('whowaswhere', 'Tutor/in');
                             }
-                        } else if (in_array($course['status'], array('user', 'autor'))) {
+                        } else if ($course['status'] == 'autor') {
                             switch ($user->geschlecht) {
                                 case 1:
                                     $status = dgettext('whowaswhere', 'Teilnehmer');
@@ -71,13 +71,27 @@
                                 default:
                                     $status = dgettext('whowaswhere', 'Teilnehmer/in');
                             }
+                        } else if ($course['status'] == 'user') {
+                            switch ($user->geschlecht) {
+                                case 1:
+                                    $status = dgettext('whowaswhere', 'Leser');
+                                    break;
+                                case 2:
+                                    $status = dgettext('whowaswhere', 'Leserin');
+                                    break;
+                                default:
+                                    $status = dgettext('whowaswhere', 'Leser/in');
+                            }
                         } else {
                             $status = dgettext('whowaswhere', 'unbekannt');
                         }
                         ?>
                         <tr>
                             <td><?= htmlReady($course['VeranstaltungsNummer']) ?></td>
-                            <td><?= htmlReady($course['Name']) ?></td>
+                            <td>
+                                <a href="<?= URLHelper::getLink('dispatch.php/course/details', ['cid' => $course['Seminar_id']]) ?>">
+                                    <?= htmlReady($course['Name']) ?></a>
+                            </td>
                             <td><?= htmlReady($course['type']) ?></td>
                             <td><?= htmlReady($status) ?></td>
                         </tr>

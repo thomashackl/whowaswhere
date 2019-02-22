@@ -111,12 +111,18 @@ class SearchController extends AuthenticatedController {
             $statselect->addElement(new SelectElement('user,autor,tutor,dozent',
                 dgettext('whowaswhere', 'Nicht einschränken'),
                 $status == 'user,autor,tutor,dozent'), 'status-all');
-            $statselect->addElement(new SelectElement('user,autor',
+            $statselect->addElement(new SelectElement('user',
+                dgettext('whowaswhere', 'Leser/in'),
+                $status == 'user'), 'status-user');
+            $statselect->addElement(new SelectElement('autor',
                 dgettext('whowaswhere', 'Teilnehmer/in'),
-                $status == 'user,autor'), 'status-user-autor');
-            $statselect->addElement(new SelectElement('tutor,dozent',
+                $status == 'autor'), 'status-autor');
+            $statselect->addElement(new SelectElement('tutor',
+                dgettext('whowaswhere', 'Tutor/in'),
+                $status == 'tutor'), 'status-tutor');
+            $statselect->addElement(new SelectElement('dozent',
                 dgettext('whowaswhere', 'Lehrende/r'),
-                $status == 'tutor,dozent'), 'status-tutor-dozent');
+                $status == 'dozent'), 'status-dozent');
             $this->sidebar->addWidget($statselect);
 
             PageLayout::setTitle($this->plugin->getDisplayName() . ' - ' .
