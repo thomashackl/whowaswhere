@@ -18,9 +18,11 @@ class InitRole extends Migration {
     public function down() {
         $pid = DBManager::get()->fetchFirst("SELECT `pluginid` FROM `plugins` WHERE `pluginclassname`='WhoWasWherePlugin'");
         if ($roles = RolePersistence::getAssignedPluginRoles($pid[0])) {
-            RolePersistence::deleteAssignedPluginRoles($pid[0], $roles);
+            RolePersistence::deleteAssignedPluginRoles($pid[0], array_map(function ($r) {
+                return $r->role_id;
+            }, $roles));
         }
-        $role = DBManager::get()->execute("DELETE FROM `roles` WHERE `rolename`='Wer hat wo teilgenommen'");
+        DBManager::get()->execute("DELETE FROM `roles` WHERE `rolename`='Wer hat wo teilgenommen'");
     }
 
 }

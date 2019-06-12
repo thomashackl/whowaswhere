@@ -24,7 +24,7 @@ class PluginForAll extends Migration {
         $rid = DBManager::get()->fetchOne(
             "SELECT `roleid` FROM `roles` WHERE `rolename` = 'Wer hat wo teilgenommen'");
         DBManager::get()->execute("INSERT IGNORE INTO `roles_plugins` VALUES (:rid, :pid)",
-            array($rid['roleid'], $pid['pluginid']));
+            array('rid' => $rid['roleid'], 'pid' => $pid['pluginid']));
     }
 
 }
