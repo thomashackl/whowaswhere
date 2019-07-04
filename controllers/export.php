@@ -49,7 +49,7 @@ class ExportController extends AuthenticatedController {
             $csv[] = array(sprintf('Geboren am: %s',
                 date('d.m.Y', strtotime($birthdate->content))));
         }
-        if ($matriculation = $GLOBALS['user']->datafields->findOneBy('Name', 'Geburtsdatum')) {
+        if ($matriculation = $GLOBALS['user']->datafields->findOneBy('Name', 'Matrikelnummer')) {
             $csv[] = array(sprintf('Matrikelnummer: %u', $matriculation->content));
         }
 
