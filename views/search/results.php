@@ -34,6 +34,7 @@
                         <th><?= dgettext('whowaswhere', 'Titel') ?></th>
                         <th width="15%"><?= dgettext('whowaswhere', 'Typ') ?></th>
                         <th width="15%"><?= dgettext('whowaswhere', 'Status') ?></th>
+                        <th width="15%"><?= dgettext('whowaswhere', 'Eingetragen am') ?></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -94,6 +95,7 @@
                             </td>
                             <td><?= htmlReady($course['type']) ?></td>
                             <td><?= htmlReady($status) ?></td>
+                            <td><?= date('d.m.Y H:i', $course['mkdate']) ?></td>
                         </tr>
                     <?php } ?>
                     </tbody>

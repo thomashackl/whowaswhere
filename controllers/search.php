@@ -184,7 +184,7 @@ class SearchController extends AuthenticatedController {
         $types = array_filter(SemType::getTypes(), function ($t) use ($categories) { return in_array($t['class'], $categories); });
 
         // Get courses for given user...
-        $query = "SELECT s.`Seminar_id`, s.`VeranstaltungsNummer`, s.`Name`, st.`name` AS type, su.`status`, sd.`name` AS semester
+        $query = "SELECT s.`Seminar_id`, s.`VeranstaltungsNummer`, s.`Name`, st.`name` AS type, su.`status`, sd.`name` AS semester, su.`mkdate`
                 FROM `seminare` s " .
                 ($onlyOwn ? "    INNER JOIN `seminar_inst` si ON (s.`Seminar_id`=si.`seminar_id`) " : "") .
                 "    INNER JOIN `seminar_user` su ON (s.`Seminar_id`=su.`Seminar_id`)
