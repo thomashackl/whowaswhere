@@ -77,12 +77,31 @@ class SearchController extends AuthenticatedController {
             $this->user = User::find($user_id);
 
             $start_time = Request::int('start_time', 0);
-            $status = Request::get('status', 'user,autor,tutor,dozent');
+
+            if (Request::get('status')) {
+
+                $rawstatus = Request::get('status');
+                $status = explode(',', Request::get('status'));
+
+            } else {
+
+                $status = 'user,autor,tutor,dozent';
+
+                if (Request::option('awaiting')) {
+                    $status .= ',awaiting';
+                }
+
+                if (Request::option('accepted')) {
+                    $status .= ',accepted';
+                }
+
+                $rawstatus = $status;
+                $status = explode(',', $status);
+
+            }
 
             // Get courses for given user.
-            $this->courses = $this->getCourses($user_id,
-                Request::quoted('status', 'user,autor,tutor,dozent'),
-                Request::int('start_time', 0));
+            $this->courses = $this->getCourses($user_id, $status, Request::int('start_time', 0));
 
             if (Config::get()->WHOWASWHERE_MATRICULATION_DATAFIELD_ID) {
                 $matriculation = DBManager::get()->fetchOne(
@@ -108,21 +127,30 @@ class SearchController extends AuthenticatedController {
                 URLHelper::getLink('plugins.php/whowaswhereplugin/search/results',
                     array('user_id' => $user_id, 'start_time' => $start_time)),
                 'status', 'post');
-            $statselect->addElement(new SelectElement('user,autor,tutor,dozent',
+            $statselect->addElement(new SelectElement('user,autor,tutor,dozent,awaiting,accepted',
                 dgettext('whowaswhere', 'Nicht einschränken'),
-                $status == 'user,autor,tutor,dozent'), 'status-all');
-            $statselect->addElement(new SelectElement('user',
-                dgettext('whowaswhere', 'Leser/in'),
-                $status == 'user'), 'status-user');
-            $statselect->addElement(new SelectElement('autor',
-                dgettext('whowaswhere', 'Teilnehmer/in'),
-                $status == 'autor'), 'status-autor');
-            $statselect->addElement(new SelectElement('tutor',
-                dgettext('whowaswhere', 'Tutor/in'),
-                $status == 'tutor'), 'status-tutor');
+                $rawstatus == 'user,autor,tutor,dozent,awaiting,accepted'), 'status-all');
+            $statselect->addElement(new SelectElement('user,autor,tutor,dozent',
+                dgettext('whowaswhere', 'Nur Veranstaltungsteilnahmen'),
+                $rawstatus == 'user,autor,tutor,dozent'), 'status-participant');
             $statselect->addElement(new SelectElement('dozent',
                 dgettext('whowaswhere', 'Lehrende/r'),
-                $status == 'dozent'), 'status-dozent');
+                $rawstatus == 'dozent'), 'status-dozent');
+            $statselect->addElement(new SelectElement('tutor',
+                dgettext('whowaswhere', 'Tutor/in'),
+                $rawstatus == 'tutor'), 'status-tutor');
+            $statselect->addElement(new SelectElement('autor',
+                dgettext('whowaswhere', 'Teilnehmer/in'),
+                $rawstatus == 'autor'), 'status-autor');
+            $statselect->addElement(new SelectElement('user',
+                dgettext('whowaswhere', 'Leser/in'),
+                $rawstatus == 'user'), 'status-user');
+            $statselect->addElement(new SelectElement('awaiting',
+                dgettext('whowaswhere', 'Warteliste'),
+                $rawstatus == 'awaiting'), 'status-awaiting');
+            $statselect->addElement(new SelectElement('accepted',
+                dgettext('whowaswhere', 'Vorläufig akzeptiert'),
+                $rawstatus == 'accepted'), 'status-accepted');
             $this->sidebar->addWidget($statselect);
 
             PageLayout::setTitle($this->plugin->getDisplayName() . ' - ' .
@@ -140,7 +168,7 @@ class SearchController extends AuthenticatedController {
 
     public function export_csv_action($user_id, $status, $start_time)
     {
-        $courses = $this->getCourses($user_id, $status, $start_time);
+        $courses = $this->getCourses($user_id, explode(',', $status), $start_time);
         $data = array(
             array(_('Semester'), _('Nummer'), _('Titel'), _('Dozent/in'), _('Zeiten'))
         );
@@ -170,7 +198,7 @@ class SearchController extends AuthenticatedController {
         return PluginEngine::getURL($this->plugin, $params, join("/", $args));
     }
 
-    private function getCourses($user_id, $status = 'user,autor,tutor,dozent', $start_time = 0)
+    private function getCourses($user_id, $status = ['user','autor','tutor','dozent','awaiting','accepted'], $start_time = 0)
     {
 
         // Check if current user can only see results coming from own institutes.
@@ -184,20 +212,25 @@ class SearchController extends AuthenticatedController {
         $types = array_filter(SemType::getTypes(), function ($t) use ($categories) { return in_array($t['class'], $categories); });
 
         // Get courses for given user...
-        $query = "SELECT s.`Seminar_id`, s.`VeranstaltungsNummer`, s.`Name`, st.`name` AS type, su.`status`, sd.`name` AS semester, su.`mkdate`
+        $query = "SELECT s.`Seminar_id`, s.`VeranstaltungsNummer`, s.`Name`, s.`start_time`,
+                    st.`name` AS type, su.`status`, sd.`name` AS semester, su.`mkdate`
                 FROM `seminare` s " .
-                ($onlyOwn ? "    INNER JOIN `seminar_inst` si ON (s.`Seminar_id`=si.`seminar_id`) " : "") .
-                "    INNER JOIN `seminar_user` su ON (s.`Seminar_id`=su.`Seminar_id`)
-                    INNER JOIN `sem_types` st ON (s.`status`=st.`id`)
+                ($onlyOwn ? "    INNER JOIN `seminar_inst` si ON (s.`Seminar_id` = si.`seminar_id`) " : "") .
+                "    INNER JOIN `seminar_user` su ON (s.`Seminar_id` = su.`Seminar_id`)
+                    INNER JOIN `sem_types` st ON (s.`status` = st.`id`)
                     INNER JOIN `semester_data` sd ON (s.`start_time` BETWEEN sd.`beginn` AND sd.`ende`)
-                WHERE su.`user_id`=:user
+                WHERE su.`user_id` = :user
                     AND s.`status` IN (:include)
                     AND su.`status` IN (:userstatus)";
-        $parameters = array(
+
+        $parameters = [
             'user' => $user_id,
             'include' => array_map(function ($t) { return $t['id']; }, $types),
-            'userstatus' => explode(",", $status)
-        );
+            'userstatus' => array_filter($status, function ($one) {
+                return in_array($one, ['user', 'autor', 'tutor', 'dozent']);
+            })
+        ];
+
         if ($onlyOwn) {
             $query .= " AND si.`institut_id` IN (:inst)";
             $parameters['inst'] = array_map(function ($i) { return $i['Institut_id']; }, Institute::getMyInstitutes());
@@ -208,7 +241,33 @@ class SearchController extends AuthenticatedController {
             $parameters['start'] = $start_time;
         }
 
-        $query .= " ORDER BY s.`start_time` DESC, s.`VeranstaltungsNummer`, s.`Name`";
+        if (in_array('awaiting', $status) || in_array('accepted', $status)) {
+            $query .= "UNION
+                SELECT s.`Seminar_id`, s.`VeranstaltungsNummer`, s.`Name`, s.`start_time`,
+                    st.`name` AS type, a.`status`, sd.`name` AS semester, a.`mkdate`
+                FROM `seminare` s " .
+                ($onlyOwn ? "    INNER JOIN `seminar_inst` si ON (s.`Seminar_id`=si.`seminar_id`) " : "") .
+                "    INNER JOIN `admission_seminar_user` a ON (s.`Seminar_id` = a.`seminar_id`)
+                    INNER JOIN `sem_types` st ON (s.`status` = st.`id`)
+                    INNER JOIN `semester_data` sd ON (s.`start_time` BETWEEN sd.`beginn` AND sd.`ende`)
+                WHERE a.`user_id` = :user
+                    AND s.`status` IN (:include)
+                    AND a.`status` IN (:prelimstatus)";
+
+            if ($onlyOwn) {
+                $query .= " AND si.`institut_id` IN (:inst)";
+            }
+
+            if ($start_time) {
+                $query .= " AND s.`start_time`=:start ";
+            }
+
+            $parameters['prelimstatus'] = array_filter($status, function ($one) {
+                return in_array($one, ['awaiting', 'accepted']);
+            });
+        }
+
+        $query .= " ORDER BY `start_time` DESC, `VeranstaltungsNummer`, `Name`";
         $courses = DBManager::get()->fetchAll($query, $parameters);
 
         // ... and sort them by semester.

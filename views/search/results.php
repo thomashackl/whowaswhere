@@ -83,6 +83,10 @@
                                 default:
                                     $status = dgettext('whowaswhere', 'Leser/in');
                             }
+                        } else if ($course['status'] == 'awaiting') {
+                            $status = dgettext('whowaswhere', 'Warteliste');
+                        } else if ($course['status'] == 'accepted') {
+                            $status = dgettext('whowaswhere', 'Vorläufig akzeptiert');
                         } else {
                             $status = dgettext('whowaswhere', 'unbekannt');
                         }

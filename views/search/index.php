@@ -4,15 +4,26 @@
         <?= $search ?>
     </section>
     <section>
-        <label>
+        <label for="start-time">
             <?= dgettext('whowaswhere', 'Semester einschränken:') ?>
-            <br/>
-            <select name="start_time">
-                <option value=""><?= dgettext('whowaswhere', 'Alle Semester') ?></option>
-                <?php foreach ($semesters as $s) { ?>
+        </label>
+        <select name="start_time" id="start-time">
+            <option value=""><?= dgettext('whowaswhere', 'Alle Semester') ?></option>
+            <?php foreach ($semesters as $s) { ?>
                 <option value="<?= $s->beginn ?>"><?= htmlReady($s->name) ?></option>
-                <?php } ?>
-            </select>
+            <?php } ?>
+        </select>
+    </section>
+    <section>
+        <label>
+            <input type="checkbox" name="awaiting">
+            <?= dgettext('whowaswhere', 'Wartelisteneinträge einschließen') ?>
+        </label>
+    </section>
+    <section>
+        <label>
+            <input type="checkbox" name="accepted">
+            <?= dgettext('whowaswhere', 'Vorläufig akzeptiert-Einträge einschließen') ?>
         </label>
     </section>
     <footer>
