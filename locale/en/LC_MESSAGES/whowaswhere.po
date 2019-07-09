@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-07-08 17:03+0200\n"
-"PO-Revision-Date: 2015-05-07 13:46+0200\n"
-"Last-Translator: Thomas <Thomas.Hackl@uni-passau.de>\n"
-"Language-Team: English <http://example.com/weblate/projects/studip/"
-"whowaswhereplugin/en/>\n"
+"PO-Revision-Date: 2019-07-09 07:07+0000\n"
+"Last-Translator: Thomas Hackl <Thomas.Hackl@uni-passau.de>\n"
+"Language-Team: English <https://develop.intelec.uni-passau.de/weblate/"
+"weblate/projects/studip/whowaswhere/en/>\n"
 "Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2.3-dev\n"
+"X-Generator: Weblate 3.5-dev\n"
 
 #: WhoWasWherePlugin.class.php:30
 msgid "Suche"
@@ -29,27 +29,25 @@ msgstr "Who participated where?"
 
 #: WhoWasWherePlugin.class.php:59
 msgid "Excel-Export"
-msgstr ""
+msgstr "Excel export"
 
 #: WhoWasWherePlugin.class.php:62 controllers/export.php:34
-#, fuzzy
 msgid "Meine Veranstaltungen exportieren"
-msgstr "No courses have been found for %s."
+msgstr "Export my courses"
 
 #: controllers/export.php:46
 #, php-format
 msgid "Veranstaltungsübersicht für %s"
-msgstr ""
+msgstr "Course overview for %s"
 
 #: controllers/export.php:68
 #, php-format
 msgid "Daten vom %s"
-msgstr ""
+msgstr "Data from %s"
 
 #: controllers/export.php:72 controllers/search.php:173
-#, fuzzy
 msgid "Semester"
-msgstr "All semesters"
+msgstr "Semester"
 
 #: controllers/export.php:73 controllers/search.php:173
 #: views/search/results.php:33 views/export/index.php:27
@@ -58,7 +56,7 @@ msgstr "Number"
 
 #: controllers/export.php:74 views/export/index.php:28
 msgid "Name"
-msgstr ""
+msgstr "Name"
 
 #: controllers/export.php:75 views/search/results.php:35
 #: views/export/index.php:29
@@ -66,21 +64,20 @@ msgid "Typ"
 msgstr "Type"
 
 #: controllers/export.php:76
-#, fuzzy
 msgid "Dozierende"
-msgstr "Lecturer"
+msgstr "Lecturers"
 
 #: controllers/export.php:77
 msgid "ECTS"
-msgstr ""
+msgstr "Credit points"
 
 #: controllers/export.php:78
 msgid "Anrechenbarkeit"
-msgstr ""
+msgstr "Acceptance for credit"
 
 #: controllers/search.php:28
 msgid "Sie haben nicht die nötigen Rechte, um auf diese Funktion zuzugreifen!"
-msgstr ""
+msgstr "You do not have the necessary permission to use this function!"
 
 #: controllers/search.php:114
 msgid "Semester einschränken"
@@ -99,9 +96,8 @@ msgid "Nicht einschränken"
 msgstr "No filter"
 
 #: controllers/search.php:134
-#, fuzzy
 msgid "Nur Veranstaltungsteilnahmen"
-msgstr "Courses %s participated in"
+msgstr "Only course participations"
 
 #: controllers/search.php:137
 msgid "Lehrende/r"
@@ -117,20 +113,20 @@ msgstr "Participant"
 
 #: controllers/search.php:146 views/search/results.php:84
 msgid "Leser/in"
-msgstr ""
+msgstr "Reader"
 
 #: controllers/search.php:149 views/search/results.php:87
 msgid "Warteliste"
-msgstr ""
+msgstr "Waiting list"
 
 #: controllers/search.php:152 views/search/results.php:89
 msgid "Vorläufig akzeptiert"
-msgstr ""
+msgstr "Preliminary acceptance"
 
 #: controllers/search.php:157
 #, php-format
 msgid "Suchergebnis für %s"
-msgstr ""
+msgstr "Search result for %s"
 
 #: controllers/search.php:173 views/search/results.php:34
 msgid "Titel"
@@ -142,11 +138,11 @@ msgstr "Lecturer"
 
 #: controllers/search.php:173
 msgid "Zeiten"
-msgstr ""
+msgstr "Times"
 
 #: views/search/index.php:1
 msgid "Suchen Sie hier nach Personen"
-msgstr "Person search"
+msgstr "Search for persons here"
 
 #: views/search/index.php:8
 msgid "Semester einschränken:"
@@ -154,11 +150,11 @@ msgstr "Filter semester:"
 
 #: views/search/index.php:20
 msgid "Wartelisteneinträge einschließen"
-msgstr ""
+msgstr "Include waiting list entries"
 
 #: views/search/index.php:26
 msgid "Vorläufig akzeptiert-Einträge einschließen"
-msgstr ""
+msgstr "Include preliminary acceptance entries"
 
 #: views/search/index.php:30
 msgid "Suche starten"
@@ -166,24 +162,24 @@ msgstr "Search"
 
 #: views/search/results.php:7
 msgid "Matrikelnummer"
-msgstr ""
+msgstr "Matriculation number"
 
 #: views/search/results.php:12
 msgid "Studiengang"
 msgid_plural "Studiengänge"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Course of study"
+msgstr[1] "Courses of study"
 
 #: views/search/results.php:21
 msgid "Veranstaltungen"
-msgstr ""
+msgstr "Courses"
 
 #: views/search/results.php:23
-#, fuzzy, php-format
+#, php-format
 msgid "Es werden nur Veranstaltungen der Kategorie \"%s\" angezeigt."
 msgid_plural "Es werden nur Veranstaltungen der Kategorien \"%s\" angezeigt"
-msgstr[0] "No courses have been found for %s."
-msgstr[1] "No courses have been found for %s."
+msgstr[0] "Only courses of category %s are shown."
+msgstr[1] "Only courses of categories %s are shown"
 
 #: views/search/results.php:36
 msgid "Status"
@@ -191,7 +187,7 @@ msgstr "Status"
 
 #: views/search/results.php:37
 msgid "Eingetragen am"
-msgstr ""
+msgstr "Created at"
 
 #: views/search/results.php:45
 msgid "Dozent"
@@ -219,33 +215,32 @@ msgstr "Participant"
 
 #: views/search/results.php:78
 msgid "Leser"
-msgstr ""
+msgstr "Reader"
 
 #: views/search/results.php:81
 msgid "Leserin"
-msgstr ""
+msgstr "Reader"
 
 #: views/search/results.php:91
 msgid "unbekannt"
 msgstr "unknown"
 
 #: views/search/results.php:110
-#, fuzzy
 msgid "Es wurden keine Veranstaltungen gefunden."
-msgstr "No courses have been found for %s."
+msgstr "No courses have been found for."
 
 #: views/export/index.php:4
 msgid "Welche Veranstaltungen sollen im Export ausgegeben werden?"
-msgstr ""
+msgstr "Which courses shall be listed in the export?"
 
 #: views/export/index.php:7
 msgid "Es sind nur Veranstaltungen bis zum aktuellen Semester auswählbar."
-msgstr ""
+msgstr "You can only select courses up to the current semester."
 
 #: views/export/index.php:55
 msgid "Exportieren"
-msgstr ""
+msgstr "Export"
 
 #: views/export/index.php:56
 msgid "Schließen"
-msgstr ""
+msgstr "Close"
